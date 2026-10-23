@@ -155,13 +155,15 @@ img {
     padding: 12px 24px;
     color: #fff;
     background-color: #000;
-    transform: translate(-50%, -100%);
+    visibility: hidden;
+    transform: translate(-50%, calc(-100% - 2px));
     transition: transform 0.2s ease;
 }
 
 #skipNav a:focus,
 #skipNav a:active,
 #skipNav a:hover {
+    visibility: visible;
     transform: translate(-50%, 0);
 }
 

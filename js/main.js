@@ -1,9 +1,63 @@
+import Swiper from 'swiper/bundle';
+import 'swiper/css/bundle';
+
+window.Swiper = Swiper;
+
+const initPromotionTitles = () => {
+    document.querySelectorAll('.promotion-card .visual-title').forEach((title) => {
+        const lines = title.innerHTML.split(/<br\s*\/?\s*>/i);
+        const label = lines.map((line) => line.trim()).join(' ');
+
+        title.setAttribute('aria-label', label);
+        title.replaceChildren();
+
+        lines.forEach((text) => {
+            const line = document.createElement('span');
+            const original = document.createElement('span');
+            const incoming = document.createElement('span');
+
+            line.className = 'title-line';
+            line.setAttribute('aria-hidden', 'true');
+            original.className = 'title-original';
+            incoming.className = 'title-incoming';
+            original.textContent = text;
+            incoming.textContent = text;
+            line.append(original, incoming);
+            title.append(line);
+        });
+    });
+};
+
+const initButtonClipHover = () => {
+    document.querySelectorAll('.main button').forEach((button) => {
+        const layer = document.createElement('span');
+
+        layer.className = 'button-clip-layer';
+        layer.setAttribute('aria-hidden', 'true');
+        button.childNodes.forEach((child) => layer.append(child.cloneNode(true)));
+        button.classList.add('has-clip-hover');
+        button.append(layer);
+    });
+};
+
+const initImageHover = () => {
+    document.querySelectorAll('.card-image, .live-card > img, .ranking-image').forEach((image) => {
+        const frame = document.createElement('div');
+
+        frame.className = `${image.className} image-frame`.trim();
+        image.className = 'zoom-image';
+        image.before(frame);
+        frame.append(image);
+    });
+};
+
 const initHero = () => {
     const hero = document.querySelector('#hero');
 
     if (!hero || !window.Swiper) return;
 
     const control = hero.querySelector('.control');
+    const controlIcon = control?.querySelector('.control-icon');
     const pagingButtons = [...hero.querySelectorAll('.paging li button')];
     const progress = hero.querySelector('.control-progress');
     const heroImages = [...hero.querySelectorAll('.visual-main')];
@@ -16,7 +70,7 @@ const initHero = () => {
             }
 
             image.dataset.fallbackApplied = 'true';
-            image.src = 'images/visual1.jpg';
+            image.src = '/images/visual1.jpg';
         });
     });
 
@@ -55,6 +109,7 @@ const initHero = () => {
     };
 
     control?.setAttribute('aria-pressed', 'false');
+    control?.setAttribute('aria-label', '자동 재생 일시정지');
 
     control?.addEventListener('click', () => {
         const isPaused = control.getAttribute('aria-pressed') === 'true';
@@ -67,6 +122,9 @@ const initHero = () => {
         }
 
         control.setAttribute('aria-pressed', String(!isPaused));
+        if (controlIcon) {
+            controlIcon.src = isPaused ? '/images/hero-icon-pause.svg' : '/images/hero-icon-play.svg';
+        }
         control.setAttribute(
             'aria-label',
             isPaused ? '자동 재생 일시정지' : '자동 재생 시작',
@@ -214,6 +272,41 @@ const initScrollSlider = (
 
     prevButton?.addEventListener('click', () => move(-1));
     nextButton?.addEventListener('click', () => move(1));
+};
+
+const initLiveCountdown = () => {
+    const timer = document.querySelector('.live-header time');
+
+    if (!timer) return;
+
+    const duration = timer.getAttribute('datetime')?.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+
+    if (!duration) return;
+
+    const totalSeconds = Number(duration[1] || 0) * 3600
+        + Number(duration[2] || 0) * 60
+        + Number(duration[3] || 0);
+    const endsAt = Date.now() + totalSeconds * 1000;
+    let interval;
+
+    // Calculate from the deadline so background tabs do not slow the countdown.
+    const update = () => {
+        const remaining = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+        const hours = Math.floor(remaining / 3600);
+        const minutes = Math.floor((remaining % 3600) / 60);
+        const seconds = remaining % 60;
+
+        timer.textContent = [hours, minutes, seconds]
+            .map((value) => String(value).padStart(2, '0'))
+            .join(' : ');
+        timer.setAttribute('datetime', `PT${hours}H${minutes}M${seconds}S`);
+
+        if (remaining === 0) window.clearInterval(interval);
+    };
+
+    timer.setAttribute('role', 'timer');
+    interval = window.setInterval(update, 1000);
+    update();
 };
 
 const initLiveSwiper = () => {
@@ -396,8 +489,11 @@ const initSectionTag = () => {
 (() => {
     initHero();
     initTransformSlider();
+    initPromotionTitles();
     initLiveSwiper();
+    initLiveCountdown();
     initRankingSwiper();
+    initImageHover();
+    initButtonClipHover();
     initTopButton();
-    initSectionTag();
 })();

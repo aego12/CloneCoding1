@@ -252,6 +252,7 @@
 }
 
 .main .con1 .inner {
+    width: min(calc(100% - 40px), calc(var(--content-width) + 80px));
     height: 727px;
 }
 
@@ -264,6 +265,7 @@
 }
 
 .main .con1 .promotion-card {
+    --card-image-width: 270px;
     position: relative;
     flex: 0 0 320px;
     width: 320px;
@@ -285,20 +287,56 @@
     text-align: right;
 }
 
+.main .con1 .visual-title .title-line {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    padding-inline: 0.18em;
+    margin-inline: -0.18em;
+}
+
+.main .con1 .visual-title .title-original,
+.main .con1 .visual-title .title-incoming {
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.main .con1 .visual-title .title-incoming {
+    position: absolute;
+    inset: 0;
+    padding-inline: 0.18em;
+    transform: translateY(100%);
+}
+
+.main .con1 .promotion-card:is(:hover, :focus-within) .title-original {
+    transform: translateY(-100%);
+}
+
+.main .con1 .promotion-card:is(:hover, :focus-within) .title-incoming {
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .main .con1 .visual-title .title-original,
+    .main .con1 .visual-title .title-incoming {
+        transition: none;
+    }
+}
+
 .main .con1 .card-image {
     position: absolute;
     top: 29px;
     left: 0;
     display: block;
-    width: 270px;
+    width: var(--card-image-width);
     height: 468px;
     object-fit: cover;
 }
 
 .main .con1 .card-actions {
     position: absolute;
-    top: 412px;
-    left: 272px;
+    top: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
     width: 36px;
@@ -320,8 +358,10 @@
 
 .main .con1 .card-actions img {
     display: block;
-    width: 24px;
-    height: 24px;
+    width: auto;
+    height: auto;
+    max-width: 26px;
+    max-height: 25px;
     object-fit: contain;
 }
 
@@ -354,11 +394,14 @@
     position: absolute;
     top: 531px;
     left: 0;
-    width: 270px;
+    box-sizing: border-box;
+    width: var(--card-image-width);
+    min-height: 84px;
+    padding-right: 48px;
 }
 
 .main .con1 .card-info h3 {
-    width: 262px;
+    width: 100%;
     min-height: 54px;
     color: var(--color-black);
     font-size: 18px;
@@ -368,7 +411,8 @@
 
 .main .con1 .tags {
     display: flex;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 4px 8px;
     margin-top: 10px;
     color: var(--color-black);
     font-size: 12px;
@@ -439,6 +483,44 @@
     cursor: pointer;
     transform: translateX(-50%);
     z-index: 5;
+}
+
+.main .has-clip-hover {
+    isolation: isolate;
+}
+
+.main .card-actions .has-clip-hover {
+    position: relative;
+    border-radius: 6px;
+}
+
+.main .has-clip-hover .button-clip-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+    color: #fff;
+    background: #111;
+    pointer-events: none;
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.main .has-clip-hover .button-clip-layer img {
+    filter: invert(1);
+}
+
+.main .has-clip-hover:enabled:is(:hover, :focus-visible) .button-clip-layer {
+    clip-path: inset(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .main .has-clip-hover .button-clip-layer {
+        transition: none;
+    }
 }
 
 .main .con2 {
@@ -513,7 +595,8 @@
     text-align: left;
 }
 
-.main .con2 .live-card > img {
+.main .con2 .live-card > img,
+.main .con2 .live-card > .image-frame {
     display: block;
     width: 180px;
     height: 196px;
@@ -635,6 +718,7 @@
     flex: 0 0 162px;
     width: 162px;
     height: 193px;
+    text-align: left;
 }
 
 .main .con3 .rank {
@@ -681,6 +765,7 @@
 
 .main .con3 .ranking-price {
     display: flex;
+    justify-content: flex-start;
     gap: 4px;
     margin-top: 6px;
     font-size: 14px;
@@ -696,6 +781,7 @@
 
 .main .con3 .ranking-stats {
     display: flex;
+    justify-content: flex-start;
     align-items: center;
     gap: 14px;
     margin-top: 16px;
@@ -987,7 +1073,7 @@
     .main .con1 .promotion-list {
         width: 100%;
         gap: 24px;
-        padding: 0 32px 20px;
+        padding: 0 20px 20px;
         overflow-x: auto;
         scrollbar-width: none;
     }
@@ -1171,21 +1257,22 @@
 
     .main .con1 .promotion-list {
         gap: 20px;
-        padding-right: 20px;
-        padding-left: 20px;
+        padding-right: 16px;
+        padding-left: 16px;
     }
 
     .main .con1 .promotion-card {
+        --card-image-width: 235px;
         flex-basis: 280px;
         width: 280px;
     }
 
     .main .con1 .card-image {
-        width: 235px;
+        width: var(--card-image-width);
     }
 
     .main .con1 .card-actions {
-        left: 240px;
+        right: 0;
     }
 
     .main .con1 .visual-title {
@@ -1194,11 +1281,11 @@
     }
 
     .main .con1 .card-info {
-        width: 240px;
+        width: var(--card-image-width);
     }
 
     .main .con1 .card-info h3 {
-        width: 240px;
+        width: 100%;
     }
 
     .main .con2 {
@@ -1329,5 +1416,30 @@
         right: 12px;
         padding: 12px 7px;
         font-size: 14px;
+    }
+}
+
+/* Keep each photo inside its original box while zooming. */
+.image-frame {
+    overflow: hidden;
+}
+
+.image-frame > .zoom-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .image-frame:hover > .zoom-image {
+        transform: scale(1.05);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .image-frame > .zoom-image {
+        transition: none;
     }
 }

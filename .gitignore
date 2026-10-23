@@ -1,2 +1,9 @@
 project.md
 node_modules/
+dist/
+.vercel/
+.env*.local
+temp.html
+
+.vercel
+.env*
